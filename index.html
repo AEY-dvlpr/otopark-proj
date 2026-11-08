@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Otopark Canlı Durumu</title>
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; background: #f0f2f5; margin: 0; padding: 20px; }
+    h1 { color: #333; margin-bottom: 30px; }
+    .otopark {
+      display: flex;
+      justify-content: space-between;
+      max-width: 360px;
+      margin: 0 auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      border: 3px solid #333;
+    }
+    .sutun { display: flex; flex-direction: column; gap: 20px; }
+    .yol { width: 50px; background: #e0e0e0; border-left: 2px dashed #999; border-right: 2px dashed #999; }
+    .park {
+      width: 100px;
+      height: 90px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 1.2rem;
+      color: white;
+      border-radius: 8px;
+      transition: background-color 0.4s ease, transform 0.2s ease;
+    }
+    .dolu { background-color: #e74c3c; box-shadow: 0 0 10px rgba(231, 76, 60, 0.4); }
+    .bos { background-color: #2ecc71; box-shadow: 0 0 10px rgba(46, 204, 113, 0.4); }
+  </style>
+</head>
+<body>
+
+  <h1>Otopark Canlı Haritası</h1>
+
+  <div class="otopark">
+    <!-- Sol Taraf -->
+    <div class="sutun">
+      <div id="p1" class="park bos">P1</div>
+      <div id="p2" class="park bos">P2</div>
+    </div>
+
+    <!-- YOL -->
+    <div class="yol"></div>
+
+    <!-- Sağ Taraf -->
+    <div class="sutun">
+      <div id="p3" class="park bos">P3</div>
+      <div id="p4" class="park bos">P4</div>
+    </div>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+  <script>
+    // Kendi Firebase Veritabanı URL'inizi buraya yazın
+    const firebaseConfig = {
+      databaseURL: "https://otopark-projeniz-default-rtdb.firebaseio.com/"
+    };
+    firebase.initializeApp(firebaseConfig);
+
+    const dbRef = firebase.database().ref('otopark');
+
+    // Veri değiştiğinde canlı güncelleme
+    dbRef.on('value', (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        for (let i = 1; i <= 4; i++) {
+          const kutu = document.getElementById('p' + i);
+          const isDolu = data['park' + i];
+          
+          if (isDolu) {
+            kutu.className = 'park dolu';
+            kutu.innerText = `P${i}\n(DOLU)`;
+          } else {
+            kutu.className = 'park bos';
+            kutu.innerText = `P${i}\n(BOŞ)`;
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>
